@@ -8,230 +8,541 @@ Learn about ECMAScript6 new features.
 
 ## Notes
 
-#### Branches and Remotes
-`git branch -vv`  
-Shows branches and remote branches  
+#### Background
+* ECMAScript:  official name of JavaScript  
+* ECMAScript5:  ES5 - the default JavaScript now  
+* ECMAScript6:  ES6 or ECMAScript2015  - it is done  
+* ECMAScript Harmony:  improvements after ECMAScript5, ECMAScript 6 and later  
+* ES7:  coming soon  
+* [ES6 browser compatibility table](https://kangax.github.io/compat-table/es6/) 
 
-`git remote -v`  
+The goal for ES6 is to make JavaScript better for:  complex applications and libraries.
 
+#### New Features in ES6
+* Better syntax
+  * Block-scoped variables
+  * Destructuring 
+  * Modules
+  * Parameter handling
+  * Arrow functions
+  * Classes
+  * Template literals
+  * Object.assign()
+
+
+* Better Library
+  * new methods for strings and arrays
+  * promises
+  * maps, sets
+
+*  Completely new
+  * Generators
+  * Proxies
+  * WeakMaps   
+
+#### Block-scoped variables
 ```
-> git checkout -b new-feature
-> git push -u origin new-feature
-```
-Create new branch and set upstream remote to that branch. The -u option sets the "upstream" remote repo to track.  
+// ES5 - default JavaScript in the browsers now
+// Function scope (var)
 
-```
-> git remote add (NAME) (URL)
-> git remote -v
-```
-Add more remotes  
-
-```
-> git branch
-> git branch --no-merge
-```
-Shows branches that haven't been merged into what they branched off of  
-
-
-#### Diffs
-`> git diff master stuff`  
-Shows all differences now, between latest changes in master and changes in branch  
-
-`> git diff master..stuff`  
-If you add two periods, it shows differences the since when branch was created and the branch now  
-
-`> git diff (commit hash) (commit hash)`  
-Shows differences between two commits  
-
-
-#### Git and Data Integrity
-Git uses snapshots (versus file diffs)  
-> "Every single commit is a single snapshot of every single thing in the repository at that time. Every space, every character, every line-break."
-> "If anything changes, it knows that something is different."
-
-
-#### Commit messages
-You can ammend the previous commit message like so:  
-```
-git commit -m "This is teh best."
-git comit --ammend -m "This is the best."
+function order(x, y) {
+  if (x > y) {
+    var tmp = x;
+    x = y;
+    y = tmp;
+  }
+  console.log(tmp===x);  // true
+}
 ```
 
-> "Git always only adds something. It is nearly impossible to remove something from git."
-
-`> git log`
-Show commit logs  
-`> git reflog`
-Show every single thing that you've done with Git  
-
-If you forgot to add a file in a commit, add it in like so:  
 ```
-git add forgotten.js
-git commit --amend
+//This is what really happens:
+// Function scope (var)
+
+function order(x, y) {
+  var tmp;  //  undefined
+  if (x > y) {
+    tmp = x;
+    x = y;
+    y = tmp;
+  }
+  console.log(tmp===x);  // true
+}
 ```
-
-
-#### "Atomic Commits"
-> "Commits should be a unit of functionality."  
-> "You should be able to remove any commit and technically everything would be fine."  
-
-
-#### Undoing Changes
-If you need to modify an older commit, everything that's built on top of that is also going to be affected.  
-`git rebase --interactive HEAD^^^`  
-
-`git revert`  
-Undoes a commit  
-
-`git reset`  
-Resets your working/staging/remotes, depending on parameters  
-
-`git reset --soft HEAD^`  
-Resets staging. The caret says go back 1  
-
-`git reset --mixed HEAD^`  
-resets staging and working dir  
-
-`git reset --hard HEAD^`  
-resets staging, working, and remote  
-
-What if you erased some work you needed?  
-`git reflog`  
-You can see the commit hash. The commit doesn't go away.  
-`git reset --hard HEAD@{1}`  
-
-`reflog` changes are only local.  
-
-
-#### HEAD notation
-- HEAD^
-    - back 1 place
-- HEAD^^
-    - back 2 places
-- HEAD~n
-    - back n places
-- HEAD@{i}
-    - back to reflog index i
-
-
-#### Stashes
-> "When you change branches, anything that you were working on comes along for the ride."
-
-`git stash --include-untracked`  
-Stash your working files. This includes untracked files  
-
-`git stash list`  
-Show your stash  
-
-`git stash apply`  
-takes the top item in your stash. the 0 index  
-
-`git stash pop`  
-Applies the top item in your stash and removes it from the stash  
-
-
-#### Logs
-`git log --oneline`  
-`git log --oneline --graph`  
-`git log --no-merges`  
-`git log --author="jakerella"`  
-
-
-#### Pointing Blame
-> Something's going wrong, and you want to determine who it is. Which it's usually yourself.
-
-`git blame (filepath)`  
-It'll show a line-by-line analysis of what commits changed what lines, who did it, and when.
-
-
-#### Bisect
-What if I don't know where/why/when things went wrong?  
-`git bisect`  
-Not a difficult tool to use, but  
-> "If you don't use it, it goes away."
-
-First, switch to a broken branch  
-`git bisect start`  
-`git bisect bad`  
-`git bisect good (hash)`  
-`git status`  
-not currently on any branch. nothing to commit. (this is a detached state.)  
-Remember, you're in a detached state so you won't be able to commit any changes. But, you can stash.  
-
-#### Fast Forward
-With no divergent changes, we can "fast forward"
-
 ```
-git checkout master  
-git merge feature  
-    updating (commit)..(commit)  
-fast forward  
+// ES6
+// Block scope (var)
+
+function order(x, y) {
+  if (x > y) {
+    let tmp = x;
+    x = y;
+    y = tmp;
+  }
+  console.log(tmp===x);  // ReferenceError;  tmp is not defined
+}
 ```
 
-No Fast Forward
+#### Destructuring
+##### Destructuring Objects
 ```
-git checkout master  
-git merge feature --no-ff  
-```
-Because you lose branch-merge history with fast-forward!  
+function getAddress(){
+  return {
+    city: "Salt Lake City",
+    state: 'UT',
+    zip: 84115,
+    coords: {
+      lat: 40.776608,
+      long: -111.920485
+    }
+  };
+}
 
+// Call `getAddress()` and create a 'city', 'state' and 'zip' variable.
+// Without destructuring:  ES5
 
-#### Conflicts
-Who resolves conflicts? You do.  
+var address = getAddress();      
+var city = address.city;         // city: "Salt Lake City"
+var state = address.state;       // state: "UT"
+var zip = address.zip;           // zip: 84115
 
-```
-common text...
-<<<<<<< HEAD
-text only in master
-=======
-same line, different text in branch
->>>>>>> feature
-more common text...
-```
+// With destructuring: ES6
 
-1. Fix the conflict.
-2. Save it
-3. Stage the fixed file
-    - git add (file)
-4. Commit it
-    - git commit (msg)
-5. Remove the "orig"inal file from the branch...?
-    - git rm README.orig.md
-
-#### Rebasing
-Rebasing on Master
-    > git checkout feature
-    > git rebase master
-
-You can still get conflicts with Rebase!
-> git rebase master
-    says something about error patching
-
-    1. fix the conflict in the file
-    2. stage it
-    3. > git rebase --continue
-
-Too many conflicts?
-`git rebase --skip`
-    probably a terrible idea
-`git rebase --abort`
-    abort the entire thing
-
-"I don't always rebase, but when I do... I do it by default."
-
-```
-git pull --rebase
-git config branch.master.rebase true
-git config branch.some-other-branch.rebase true
-git config branch.autosetuprebase always
+var {city, state, zip} = getAddress();     //  city: "Salt Lake City", state: "UT", zip: 84115
 ```
 
-> "If you're doing rebase, everyone should be doing rebase. If only one person is doing rebasing and everyone else is doing merges, you're all going to hate yourselves."
+##### Destructuring Arrays
+```
+function getNumbers(){
+  return [1, 2, 3, 4, 5, 6];
+}
 
-#### Cherry Picking
-> "I need an individual commit. I have this old feature at the bottom and a new feature at the top. The old feature is dead, but that one commit has some choice changes in it."
+// Call getNumbers and pull the first value out as `one` and the second as `two` - ES6
+[one, two] = getNumbers();     //  one is 1, and two is 2
 
-Don't do a cherry pick if you're going to then merge in that old feature branch
+[one, ,three] = getNumbers();  //  you can skip values, one is 1 and three is 3
 
-## Action Items
-- [ ] Review all the above, and utilize them regularly.
+```
+
+#### Modules
+```
+// lib/math.js
+var notExported = 'abc';
+
+export function square(x) {
+  return x * x;    
+}
+
+export const MY_CONSTANT = 123;
+```
+
+```
+// main1.js
+import {square} from 'lib/math';
+console.log(square(3));    // 9
+```
+
+```
+// main1.js
+import * as math from 'lib/math';
+console.log(math.square(3));    // 9
+```
+
+#### Parameter handling
+##### Parameter default values
+```
+// Use a default if parameter is missing
+
+function func1(x, y='default') {
+  return [x, y];  
+}
+
+// Interaction:
+
+> func1(1,2)
+[1, 2]
+
+> func1()
+[undefined, 'default']
+```
+
+##### Rest parameters
+```
+// Put trailing parameters in an array
+
+function func2(arg0, ...others) {
+  return others;  
+}
+
+// Interaction:
+
+> func2('a', 'b', 'c', 'd')
+['b', 'c', 'd']
+
+> func2()
+[]
+```
+
+##### NO need for arguments anymore!!
+
+```
+// ES5
+function func() {
+  [].forEach.call(arguments,         // using call to invoke an anonymous function 
+    function(x) {...});              // use call to invoke an anonymous function on every object of the array
+  ...  
+}
+```
+
+```
+//ES6
+function func(...args) {
+  for (let arg of args) {
+    ...
+  }
+}
+```
+
+#### Spread operator (...)
+##### function arguments
+```
+//Turn an array into function arguments -  the inverse of rest parameters
+
+Math.max(...[7, 4, 11]);  // 11  very useful for really long arrays
+```
+
+```
+let arr1 = ['a', 'b'];
+let arr2 = ['c', 'd'];
+
+arr1.push(...arr2);      // arr1 is now ['a', 'b', 'c', 'd']
+```
+
+```
+// Also works in constructors!
+new Date(...[1912, 11, 24])   // Christmas Eve 1912
+```
+
+##### array elements
+```
+let a = [1, ...[2,3], 4];    // [1, 2, 3, 4]
+
+// Concatenate arrays
+let x = ['a', 'b'];
+let y = ['c'];
+let z = ['d', 'e'];
+
+let xyz = [...x, ...y, ...z];    // ['a', 'b', 'c', 'd', 'e']
+```
+
+#### Arrow functions
+##### less to type
+```
+let arr = [1, 2, 3];
+let squ;
+
+// ES5
+sqt = arr.map(function(a) {        // map is an existing feature of ES5
+  return a * a;                    // it performs an operation on every element of the array
+});                                // it returns a new array
+
+// ES6
+squ = arr.map(a => a * a);
+```
+
+##### lexical this, no more that=this
+```
+function UiComponent {
+  var that = this;
+  var button = document.getElementById('myButton');
+  button.addEventListener('click', function() {
+    console.log('CLICK');
+    that.handleClick();
+  });
+}
+
+UiComponent.prototype.handleClick = function() { ... };
+```
+```
+UiComponent {
+  let button = document.getElementById('myButton');
+  button.addEventListener('click', () => {
+    console.log('CLICK');
+    this.handleClick();
+  });
+}
+
+UiComponent.prototype.handleClick = function() { ... };
+```
+
+#### Classes
+```
+// ES5
+
+function Person(name) {
+    this.name = name;
+}
+
+Person.prototype.describe = function() {
+  return 'Person called ' + this.name;
+};
+
+var person = new Person('Oscar');
+person.describe();
+```
+
+```
+// ES6
+
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+  describe() {
+    return 'Person called ' + this.name;
+  }
+}
+
+let person = new Person('Oscar');
+person.describe();
+```
+
+##### Subclassing
+```
+// ES6
+
+class Employee extends Person {
+  constructor(name, title) {
+    super(name);
+    this.title = title;
+  }
+  describe() {
+    return super.describe() + ' (' + this.title + ')';
+  }
+}
+
+let employee = new Employee('Oscar', 'Engineer');
+employee.describe();
+```
+
+```
+// ES5
+
+function Employee(name, title) {
+  Person.call(this, name);
+  this.title = title;
+}
+
+Employee.prototype = Object.create(Person.prototype);
+Employee.prototype.constructor = Employee;
+
+Enployee.prototype.describe = function() {
+  return Person.prototype.describe.call(this) + ' (' + this.title + ')';
+};
+
+var employee = new Employee('Oscar', 'Engineer');
+employee.describe();
+
+```
+
+#### Template literals
+```
+// String interpolation
+// ES6
+
+if (x > MAX) {
+  throw new Error(
+    `At most ${MAX} allowed: ${x}!`
+  );  
+}
+```
+
+```
+// ES5
+
+if (x > MAX) {
+  throw new Error(
+    'At most ' + MAX + ' allowed: ' + x + '!''
+  );  
+}
+```
+
+#### Object.assign()
+* Object.assign(target, source_1, source_2, ...)
+  * Merge source_1 into target
+  * Merge source_2 into target
+  * etc.
+  * return target
+
+#### ES6 vs lodash or Underscore.js
+```
+let obj = { foo: 123 };
+
+// ES6
+Object.assign(obj, { bar: true });      // obj is now { foo: 123, bar: true }  
+
+// lodash/Underscore.js
+_.extend(objs, { bar: true });          // also:  _.assign(...)
+```
+
+#### ES6 tools
+* Transpiler
+  * [Babel] (https://babeljs.io/)
+  * Traceur
+  * TypeScript
+
+* Package manager
+  * np
+  * jspm
+
+* Module system
+  * [webpack] (http://webpack.github.io/)
+  * [Browserify] (http://browserify.org/)
+  * RequireJS
+
+* Linter
+  * ESLint
+  * JSHint
+  * JSLint 
+
+* Shims for ES5
+  * es6-shim
+
+#### Babel
+Babel is a JavaScript compiler that uses next generation of JavaScript.
+
+##### Running Babel from CLI 
+
+```
+// Install
+$ npm install -g babel
+
+
+// Usage
+$ babel script.js
+```
+
+##### Running Babel from the Browser
+```
+// Install
+Available from browser.js inside the folder of a babel-core npm release.
+
+// Usage
+Add the type="text/babel" attribute to your <script> tags. For example:
+```
+```
+<script src="node_modules/babel-core/browser.js"></script>
+<script type="text/babel">
+  class Test {
+    test() {
+      return "test";
+    }
+  }
+
+  var test = new Test;
+  test.test(); // "test"
+</script>
+```
+
+##### Running Babel from Browserify
+```
+// Install
+$ npm install --save-dev babelify
+
+// Usage
+$ browserify script.js -t babelify --outfile bundle.js
+```
+
+##### Running Babel from Webpack
+```
+// Install
+$ npm install --save-dev babel-loader
+
+// Usage via config
+module: {
+  loaders: [
+    { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader"}
+  ]
+}
+```
+
+#### Webpack
+Module bundler.
+
+```
+// Install: This makes the webpack command available.
+
+$ npm install webpack -g
+```
+
+```
+// Example:  Start with a empty directory. Create these files:
+
+// entry.js
+document.write("It works.");
+```
+
+```
+// index.html
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <script type="text/javascript" src="bundle.js" charset="utf-8"></script>
+  </body>
+</html>
+```
+
+```
+// Usage
+$ webpack ./entry.js bundle.js
+
+// open index.html in your browser.  It should display:  It works.
+```
+
+#### Browserify
+* Browserify lets you require('modules') in the browser by bundling up all of your dependencies.  
+* Browsers don't have the require method defined, but Node.js does. 
+* With Browserify you can write code that uses require in the same way that you would use it in Node.
+
+```
+// Install
+$ npm install -g browserify
+```
+
+```
+// Example - from browserify.org
+// file:  main.js
+
+var unique = require('uniq');
+
+var data = [1, 2, 2, 3, 4, 5, 5, 5, 6];
+
+console.log(unique(data));
+```
+```
+// Install the uniq module with npm:
+$ npm install uniq
+
+// Bundle up all the required modules starting at main.js into a single file called bundle.js
+$ browserify main.js -o bundle.js
+
+// Add this to the index.html file
+<script src="bundle.js"></script>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
