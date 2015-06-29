@@ -27,8 +27,11 @@ The completed project lives in the [completed/](https://github.com/btholt/es6-re
 
 You need to install [iojs](https://iojs.org) which is an npm compatible platform originally based on node.js and brings ES6 capabilities.
 
+Install React developer tools chrome plugin:  https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en
+
 ### How to Run
 
+0. `npm -g install gulp` 
 1. `git clone https://github.com/btholt/es6-react-pres.git`
 2. `cd es6-react-pres`
 1. `npm install`
